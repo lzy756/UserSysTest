@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title th:text="${isEdit ? '编辑顾客' : '添加顾客'}">顾客表单</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i th:class="${isEdit ? 'fas fa-edit' : 'fas fa-plus'}" class="me-2"></i>
+                <span th:text="${isEdit ? '编辑顾客' : '添加顾客'}">顾客表单</span>
+            </h1>
+            <a th:href="@{/customers}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>返回列表
+            </a>
+        </div>
+
+        <!-- 表单 -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>顾客信息
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="${isEdit ? '/customers/' + customer.id : '/customers'}" method="post"
+                              th:object="${customer}" novalidate>
+
+                            <div class="row">
+                                <!-- 姓名 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">
+                                        姓名 <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="name"
+                                           th:field="*{name}"
+                                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                           placeholder="请输入姓名" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                                         th:errors="*{name}">姓名错误信息</div>
+                                </div>
+
+                                <!-- 手机号 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">
+                                        手机号 <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="tel" class="form-control" id="phone"
+                                           th:field="*{phone}"
+                                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                                           placeholder="请输入11位手机号" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}"
+                                         th:errors="*{phone}">手机号错误信息</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- 邮箱 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">邮箱</label>
+                                    <input type="email" class="form-control" id="email"
+                                           th:field="*{email}"
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                           placeholder="请输入邮箱地址">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                                         th:errors="*{email}">邮箱错误信息</div>
+                                </div>
+
+                                <!-- 年龄 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">年龄</label>
+                                    <input type="number" class="form-control" id="age"
+                                           th:field="*{age}"
+                                           th:classappend="${#fields.hasErrors('age')} ? 'is-invalid' : ''"
+                                           placeholder="请输入年龄" min="0" max="150">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('age')}"
+                                         th:errors="*{age}">年龄错误信息</div>
+                                </div>
+                            </div>
+
+                            <!-- 性别 -->
+                            <div class="mb-3">
+                                <label class="form-label">性别</label>
+                                <div class="row">
+                                    <div class="col-auto" th:each="gender : ${genders}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   th:field="*{gender}"
+                                                   th:value="${gender}"
+                                                   th:id="'gender_' + ${gender}">
+                                            <label class="form-check-label" th:for="'gender_' + ${gender}"
+                                                   th:text="${gender.displayName}">性别</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('gender')}"
+                                     th:errors="*{gender}">性别错误信息</div>
+                            </div>
+
+                            <!-- 地址 -->
+                            <div class="mb-4">
+                                <label for="address" class="form-label">地址</label>
+                                <textarea class="form-control" id="address" rows="3"
+                                          th:field="*{address}"
+                                          th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''"
+                                          placeholder="请输入详细地址"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}"
+                                     th:errors="*{address}">地址错误信息</div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i th:class="${isEdit ? 'fas fa-save' : 'fas fa-plus'}" class="me-1"></i>
+                                    <span th:text="${isEdit ? '保存修改' : '添加顾客'}">保存</span>
+                                </button>
+                                <a th:href="@{/customers}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>取消
+                                </a>
+                                <a th:if="${isEdit and customer.id != null}"
+                                   th:href="@{/customers/{id}(id=${customer.id})}"
+                                   class="btn btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i>查看详情
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 表单说明 -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-info-circle me-2"></i>填写说明
+                        </h6>
+                        <ul class="mb-0 text-muted small">
+                            <li>标有 <span class="text-danger">*</span> 的字段为必填项</li>
+                            <li>手机号格式：以1开头的11位数字</li>
+                            <li>邮箱格式：符合邮箱地址规范</li>
+                            <li>年龄范围：0-150岁</li>
+                            <li>地址最多可输入200个字符</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            // 表单验证
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByTagName('form');
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+
+            // 手机号格式验证
+            document.getElementById('phone').addEventListener('input', function(e) {
+                const value = e.target.value;
+                const pattern = /^1[3-9]\d{9}$/;
+
+                if (value && !pattern.test(value)) {
+                    e.target.setCustomValidity('请输入正确的手机号格式');
+                } else {
+                    e.target.setCustomValidity('');
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

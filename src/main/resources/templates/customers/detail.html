@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title th:text="'顾客详情 - ' + ${customer.name}">顾客详情</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- 页面标题和操作 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-user me-2"></i>顾客详情
+            </h1>
+            <div class="btn-group" role="group">
+                <a th:href="@{/customers}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回列表
+                </a>
+                <a th:href="@{/customers/{id}/edit(id=${customer.id})}" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i>编辑
+                </a>
+                <button type="button" class="btn btn-danger"
+                        onclick="confirmDelete([[${customer.id}]], '[[${customer.name}]]')">
+                    <i class="fas fa-trash me-1"></i>删除
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 基本信息 -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-id-card me-2"></i>基本信息
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">顾客ID</label>
+                                <div class="fw-bold" th:text="${customer.id}">1</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">姓名</label>
+                                <div class="fw-bold fs-5" th:text="${customer.name}">张三</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">手机号</label>
+                                <div class="fw-bold">
+                                    <i class="fas fa-phone me-1 text-primary"></i>
+                                    <a th:href="'tel:' + ${customer.phone}" class="text-decoration-none"
+                                       th:text="${customer.phone}">13800138001</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">邮箱</label>
+                                <div class="fw-bold" th:if="${customer.email}">
+                                    <i class="fas fa-envelope me-1 text-primary"></i>
+                                    <a th:href="'mailto:' + ${customer.email}" class="text-decoration-none"
+                                       th:text="${customer.email}">email@example.com</a>
+                                </div>
+                                <div class="text-muted" th:unless="${customer.email}">未填写</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">年龄</label>
+                                <div class="fw-bold" th:if="${customer.age}">
+                                    <span th:text="${customer.age}">25</span> 岁
+                                </div>
+                                <div class="text-muted" th:unless="${customer.age}">未填写</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small">性别</label>
+                                <div>
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).MALE}"
+                                          class="badge bg-primary fs-6">
+                                        <i class="fas fa-mars me-1"></i>男
+                                    </span>
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).FEMALE}"
+                                          class="badge bg-danger fs-6">
+                                        <i class="fas fa-venus me-1"></i>女
+                                    </span>
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).OTHER}"
+                                          class="badge bg-secondary fs-6">
+                                        <i class="fas fa-genderless me-1"></i>其他
+                                    </span>
+                                    <span th:unless="${customer.gender}" class="text-muted">未填写</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-muted small">地址</label>
+                            <div class="fw-bold" th:if="${customer.address}">
+                                <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                <span th:text="${customer.address}">北京市朝阳区建国路1号</span>
+                            </div>
+                            <div class="text-muted" th:unless="${customer.address}">未填写</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间信息和统计 -->
+            <div class="col-md-4">
+                <!-- 时间信息 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-clock me-2"></i>时间信息
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted small">创建时间</label>
+                            <div class="fw-bold small"
+                                 th:text="${#temporals.format(customer.createdTime, 'yyyy年MM月dd日 HH:mm:ss')}">
+                                2024年01月01日 12:00:00
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="text-muted small">最后更新</label>
+                            <div class="fw-bold small"
+                                 th:text="${#temporals.format(customer.updatedTime, 'yyyy年MM月dd日 HH:mm:ss')}">
+                                2024年01月01日 12:00:00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速操作 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-bolt me-2"></i>快速操作
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:if="${customer.phone}" th:href="'tel:' + ${customer.phone}"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-phone me-1"></i>拨打电话
+                            </a>
+                            <a th:if="${customer.email}" th:href="'mailto:' + ${customer.email}"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-envelope me-1"></i>发送邮件
+                            </a>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="copyCustomerInfo()">
+                                <i class="fas fa-copy me-1"></i>复制信息
+                            </button>
+                            <a th:href="@{/customers/{id}/edit(id=${customer.id})}"
+                               class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-edit me-1"></i>编辑信息
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 删除确认模态框 -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>确认删除
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您确定要删除顾客 "<span th:text="${customer.name}">顾客姓名</span>" 吗？</p>
+                        <p class="text-muted">此操作不可撤销，所有相关信息都将被永久删除。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <form th:action="@{/customers/{id}/delete(id=${customer.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>确认删除
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            function confirmDelete(customerId, customerName) {
+                new bootstrap.Modal(document.getElementById('deleteModal')).show();
+            }
+
+            function copyCustomerInfo() {
+                const customerInfo = `顾客信息：
+姓名：[[${customer.name}]]
+手机：[[${customer.phone}]]
+邮箱：[[${customer.email ?: '未填写'}]]
+年龄：[[${customer.age ?: '未填写'}]]
+性别：[[${customer.gender?.displayName ?: '未填写'}]]
+地址：[[${customer.address ?: '未填写'}]]`;
+
+                navigator.clipboard.writeText(customerInfo).then(function() {
+                    // 显示成功提示
+                    const toast = document.createElement('div');
+                    toast.className = 'toast align-items-center text-white bg-success border-0';
+                    toast.setAttribute('role', 'alert');
+                    toast.innerHTML = `
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-check me-2"></i>顾客信息已复制到剪贴板
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    `;
+
+                    // 添加到页面并显示
+                    document.body.appendChild(toast);
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
+
+                    // 自动移除
+                    toast.addEventListener('hidden.bs.toast', () => {
+                        document.body.removeChild(toast);
+                    });
+                }).catch(function(err) {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动复制');
+                });
+            }
+        </script>
+    </th:block>
+</body>
+</html>
