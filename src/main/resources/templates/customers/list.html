@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{fragments/layout}">
 <head>
     <title>顾客列表</title>
@@ -13,7 +14,7 @@
                 <i class="fas fa-users me-2"></i>顾客列表
                 <small class="text-muted">（共 <span th:text="${customerPage.totalElements}">0</span> 条记录）</small>
             </h1>
-            <a th:href="@{/customers/new}" class="btn btn-primary">
+            <a th:href="@{/customers/new}" class="btn btn-primary" sec:authorize="isAuthenticated()">
                 <i class="fas fa-plus me-1"></i>添加顾客
             </a>
         </div>
@@ -122,12 +123,12 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a th:href="@{/customers/{id}/edit(id=${customer.id})}"
-                                           class="btn btn-outline-primary" title="编辑">
+                                           class="btn btn-outline-primary" title="编辑" sec:authorize="isAuthenticated()">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-outline-danger"
                                                 title="删除"
-                                                onclick="confirmDelete([[${customer.id}]], '[[${customer.name}]]')">
+                                                onclick="confirmDelete([[${customer.id}]], '[[${customer.name}]]')" sec:authorize="isAuthenticated()">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -194,6 +195,8 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <form id="deleteForm" method="post" style="display: inline;">
+                            <!-- CSRF Token -->
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-danger">
                                 <i class="fas fa-trash me-1"></i>删除
                             </button>

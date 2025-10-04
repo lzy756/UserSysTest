@@ -16,3 +16,16 @@ CREATE TABLE customers (
     INDEX idx_name (name),
     INDEX idx_created_time (created_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='顾客信息表';
+
+-- 创建用户表
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '密码',
+    created_time DATETIME NOT NULL COMMENT '创建时间',
+    updated_time DATETIME COMMENT '更新时间',
+
+    INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';

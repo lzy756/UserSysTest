@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -74,6 +75,7 @@ public class CustomerController {
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
+                                
         if (result.hasErrors()) {
             model.addAttribute("isEdit", false);
             model.addAttribute("genders", Customer.Gender.values());
@@ -124,6 +126,7 @@ public class CustomerController {
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
+                                
         if (result.hasErrors()) {
             model.addAttribute("isEdit", true);
             model.addAttribute("genders", Customer.Gender.values());
