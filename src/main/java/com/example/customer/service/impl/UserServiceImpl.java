@@ -43,15 +43,21 @@ public class UserServiceImpl implements UserService {
         if (!userOptional.isPresent()) {
             throw new UsernameNotFoundException("用户不存在: " + username);
         }
-        
+
         User user = userOptional.get();
+
+        // 将用户角色转换为Spring Security的Authority
+        String[] authorities = user.getRoles().stream()
+                .map(role -> "ROLE_" + role.name())
+                .toArray(String[]::new);
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .authorities("USER")
+                .authorities(authorities.length > 0 ? authorities : new String[]{"ROLE_USER"})
                 .build();
     }
-    
+
     public PasswordEncoder getPasswordEncoder() {
         return passwordEncoder;
     }

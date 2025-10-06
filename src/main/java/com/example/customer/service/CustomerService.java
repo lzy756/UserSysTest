@@ -1,6 +1,7 @@
 package com.example.customer.service;
 
 import com.example.customer.entity.Customer;
+import com.example.customer.entity.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,7 +30,7 @@ public interface CustomerService {
 
     List<Customer> findCustomersByAgeRange(Integer minAge, Integer maxAge);
 
-    List<Customer> findCustomersByGender(Customer.Gender gender);
+    List<Customer> findCustomersByGender(Gender gender);
 
     boolean isPhoneExists(String phone, Long excludeId);
 

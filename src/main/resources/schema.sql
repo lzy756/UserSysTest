@@ -1,3 +1,6 @@
+-- 先删除有外键约束的表
+DROP TABLE IF EXISTS user_roles;
+
 -- 创建顾客信息表
 DROP TABLE IF EXISTS customers;
 
@@ -29,3 +32,13 @@ CREATE TABLE users (
 
     INDEX idx_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+-- 创建用户角色关联表（必须在users表之后创建）
+
+CREATE TABLE user_roles (
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    role VARCHAR(20) NOT NULL COMMENT '角色：ADMIN, USER, MANAGER',
+
+    PRIMARY KEY (user_id, role),
+    CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户角色关联表';

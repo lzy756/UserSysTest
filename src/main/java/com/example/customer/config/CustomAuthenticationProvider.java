@@ -2,6 +2,8 @@ package com.example.customer.config;
 
 import com.example.customer.entity.User;
 import com.example.customer.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,13 +14,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
     private final UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -38,70 +41,48 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
+        logger.info("尝试认证用户: {}", username);
+
         // 查找用户
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
+            logger.error("用户不存在: {}", username);
             throw new BadCredentialsException("用户名或密码错误");
         }
 
         User user = userOptional.get();
+        logger.info("找到用户: {}, 角色数量: {}", username, user.getRoles().size());
+        logger.info("用户角色: {}", user.getRoles());
 
-        // 验证密码
-        // 前端传来的是SHA-256加密后的密码，需要与数据库中的BCrypt密码比对
-        // 方法：先对前端传来的SHA-256哈希再进行BCrypt验证
+        // 验证密码 - 直接使用BCrypt验证明文密码
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            logger.info("密码验证成功");
 
-        // 如果传入的密码是64位十六进制（SHA-256的特征），说明是前端加密过的
-        if (password.matches("^[a-f0-9]{64}$")) {
-            // 前端发送的是SHA-256哈希值
-            // 我们需要验证：SHA-256(原始密码) == 传入的password
-            // 然后验证：BCrypt(SHA-256(原始密码)) == 数据库中的密码
+            List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                    .collect(Collectors.toList());
 
-            // 由于我们无法从SHA-256反推原始密码，我们需要改变策略：
-            // 在数据库中存储 BCrypt(SHA-256(原始密码))
-            // 验证时：比对 BCrypt.matches(前端传来的SHA-256, 数据库中的BCrypt)
+            logger.info("授予的权限: {}", authorities);
 
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return new UsernamePasswordAuthenticationToken(
-                    username,
-                    password,
-                    Collections.singletonList(new SimpleGrantedAuthority("USER"))
-                );
+            // 如果没有角色，给一个默认角色
+            if (authorities.isEmpty()) {
+                logger.warn("用户没有角色，授予默认USER角色");
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
             }
-        } else {
-            // 如果是明文（向后兼容或调试用），直接BCrypt验证
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return new UsernamePasswordAuthenticationToken(
-                    username,
-                    password,
-                    Collections.singletonList(new SimpleGrantedAuthority("USER"))
-                );
-            }
+
+            return new UsernamePasswordAuthenticationToken(
+                username,
+                password,
+                authorities
+            );
         }
 
+        logger.error("密码验证失败");
         throw new BadCredentialsException("用户名或密码错误");
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
-    }
-
-    /**
-     * 工具方法：计算字符串的SHA-256哈希值
-     */
-    private String sha256(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("SHA-256加密失败", e);
-        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.customer.controller;
 
 import com.example.customer.entity.Customer;
+import com.example.customer.entity.Gender;
 import com.example.customer.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class CustomerController {
     public String showCreateForm(Model model) {
         model.addAttribute("customer", new Customer());
         model.addAttribute("isEdit", false);
-        model.addAttribute("genders", Customer.Gender.values());
+        model.addAttribute("genders", Gender.values());
         return "customers/form";
     }
 
@@ -78,7 +79,7 @@ public class CustomerController {
                                 
         if (result.hasErrors()) {
             model.addAttribute("isEdit", false);
-            model.addAttribute("genders", Customer.Gender.values());
+            model.addAttribute("genders", Gender.values());
             return "customers/form";
         }
 
@@ -89,7 +90,7 @@ public class CustomerController {
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("isEdit", false);
-            model.addAttribute("genders", Customer.Gender.values());
+            model.addAttribute("genders", Gender.values());
             return "customers/form";
         }
     }
@@ -112,7 +113,7 @@ public class CustomerController {
         if (customer.isPresent()) {
             model.addAttribute("customer", customer.get());
             model.addAttribute("isEdit", true);
-            model.addAttribute("genders", Customer.Gender.values());
+            model.addAttribute("genders", Gender.values());
             return "customers/form";
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "客户不存在！");
@@ -129,7 +130,7 @@ public class CustomerController {
                                 
         if (result.hasErrors()) {
             model.addAttribute("isEdit", true);
-            model.addAttribute("genders", Customer.Gender.values());
+            model.addAttribute("genders", Gender.values());
             return "customers/form";
         }
 
@@ -141,7 +142,7 @@ public class CustomerController {
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("isEdit", true);
-            model.addAttribute("genders", Customer.Gender.values());
+            model.addAttribute("genders", Gender.values());
             return "customers/form";
         }
     }

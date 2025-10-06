@@ -79,15 +79,15 @@
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted small">性别</label>
                                 <div>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).MALE}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).MALE}"
                                           class="badge bg-primary fs-6">
                                         <i class="fas fa-mars me-1"></i>男
                                     </span>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).FEMALE}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).FEMALE}"
                                           class="badge bg-danger fs-6">
                                         <i class="fas fa-venus me-1"></i>女
                                     </span>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).OTHER}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).OTHER}"
                                           class="badge bg-secondary fs-6">
                                         <i class="fas fa-genderless me-1"></i>其他
                                     </span>

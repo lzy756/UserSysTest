@@ -107,11 +107,11 @@
                                 <td th:text="${customer.email}">email@example.com</td>
                                 <td th:text="${customer.age}">25</td>
                                 <td>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).MALE}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).MALE}"
                                           class="badge bg-primary">男</span>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).FEMALE}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).FEMALE}"
                                           class="badge bg-danger">女</span>
-                                    <span th:if="${customer.gender == T(com.example.customer.entity.Customer.Gender).OTHER}"
+                                    <span th:if="${customer.gender == T(com.example.customer.entity.Gender).OTHER}"
                                           class="badge bg-secondary">其他</span>
                                 </td>
                                 <td th:text="${#strings.abbreviate(customer.address, 20)}">地址</td>

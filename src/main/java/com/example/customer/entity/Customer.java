@@ -1,11 +1,19 @@
 package com.example.customer.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customers")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = {"createdTime", "updatedTime"})
 public class Customer {
 
     @Id
@@ -45,22 +53,6 @@ public class Customer {
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
 
-    public enum Gender {
-        MALE("男"),
-        FEMALE("女"),
-        OTHER("其他");
-
-        private final String displayName;
-
-        Gender(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
     @PrePersist
     protected void onCreate() {
         this.createdTime = LocalDateTime.now();
@@ -72,102 +64,4 @@ public class Customer {
         this.updatedTime = LocalDateTime.now();
     }
 
-    public Customer() {
-    }
-
-    public Customer(String name, String phone, String email, String address, Integer age, Gender gender) {
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.age = age;
-        this.gender = gender;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public LocalDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(LocalDateTime updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", age=" + age +
-                ", gender=" + gender +
-                ", createdTime=" + createdTime +
-                ", updatedTime=" + updatedTime +
-                '}';
-    }
 }

@@ -6,7 +6,15 @@ INSERT INTO customers (name, phone, email, address, age, gender, created_time, u
 ('赵六', '13800138004', 'zhaoliu@example.com', '深圳市南山区科技园', 32, 'FEMALE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ('钱七', '13800138005', 'qianqi@example.com', '杭州市西湖区文三路', 26, 'MALE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- 插入默认管理员用户 (用户名: admin, 密码: admin123 - 使用SHA-256+BCrypt双重加密)
--- 前端使用SHA-256加密后传输，后端对SHA-256哈希值进行BCrypt验证
+-- 插入默认管理员用户
+-- 用户名: admin
+-- 密码: admin123 (BCrypt加密)
 INSERT INTO users (username, password, created_time, updated_time) VALUES
-('admin', '$2a$10$H00e5MuEhwR3/tVHoVqVD.LGsfzuBPuW8gIuKmvDQfsDsUU1aSyxy', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('admin', '$2a$10$BZyNYXWFZZAbSKGcl6rJJOoqjWp5dtr2.GkS.JxRo0SaEz/5Ccjoe', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 插入用户角色关联
+-- admin用户拥有所有角色
+INSERT INTO user_roles (user_id, role) VALUES
+(1, 'ADMIN'),
+(1, 'USER'),
+(1, 'MANAGER');

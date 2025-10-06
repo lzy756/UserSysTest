@@ -1,6 +1,9 @@
 package com.example.customer.service.impl;
 
 import com.example.customer.entity.Customer;
+import com.example.customer.entity.Gender;
+import com.example.customer.exception.CustomerNotFoundException;
+import com.example.customer.exception.DuplicatePhoneException;
 import com.example.customer.repository.CustomerRepository;
 import com.example.customer.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer saveCustomer(Customer customer) {
         if (isPhoneExists(customer.getPhone(), null)) {
-            throw new RuntimeException("手机号已存在: " + customer.getPhone());
+            throw new DuplicatePhoneException(customer.getPhone());
         }
         return customerRepository.save(customer);
     }
@@ -34,15 +37,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Customer customer) {
         if (customer.getId() == null) {
-            throw new RuntimeException("更新客户时ID不能为空");
+            throw new CustomerNotFoundException("更新客户时ID不能为空");
         }
 
         if (isPhoneExists(customer.getPhone(), customer.getId())) {
-            throw new RuntimeException("手机号已存在: " + customer.getPhone());
+            throw new DuplicatePhoneException(customer.getPhone());
         }
 
         if (!customerRepository.existsById(customer.getId())) {
-            throw new RuntimeException("客户不存在, ID: " + customer.getId());
+            throw new CustomerNotFoundException(customer.getId());
         }
 
         return customerRepository.save(customer);
@@ -51,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long id) {
         if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("客户不存在, ID: " + id);
+            throw new CustomerNotFoundException(id);
         }
         customerRepository.deleteById(id);
     }
@@ -100,28 +103,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(readOnly = true)
     public List<Customer> findCustomersByAgeRange(Integer minAge, Integer maxAge) {
-        List<Customer> result = customerRepository.findAll();
-
-        if (minAge != null) {
-            result = customerRepository.findByAgeGreaterThanEqual(minAge);
-        }
-
-        if (maxAge != null) {
-            if (minAge != null) {
-                result = result.stream()
-                    .filter(customer -> customer.getAge() != null && customer.getAge() <= maxAge)
-                    .collect(java.util.stream.Collectors.toList());
-            } else {
-                result = customerRepository.findByAgeLessThanEqual(maxAge);
-            }
-        }
-
-        return result;
+        // 使用优化后的Repository方法，直接在数据库层面过滤
+        return customerRepository.findByAgeRange(minAge, maxAge, Pageable.unpaged()).getContent();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Customer> findCustomersByGender(Customer.Gender gender) {
+    public List<Customer> findCustomersByGender(Gender gender) {
         return customerRepository.findByGender(gender);
     }
 
